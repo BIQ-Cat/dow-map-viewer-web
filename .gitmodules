@@ -1,0 +1,3 @@
+[submodule "raycasting-engine-go"]
+	path = raycasting-engine-go
+	url = https://github.com/BIQ-Cat/raycasting-engine-go

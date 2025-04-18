@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
     <script>
-      {{ json }}
+      window.gameMap = {{ data }};
     </script>
     <script src="/static/wasm/wasm_exec.js"></script>
     <script>
@@ -22,6 +22,6 @@
   <body>
     <p id="fps">FPS: 0</p>
     <canvas width="{{width}}" height="{{height}}"></canvas> <!-- width and height are set by server -->
-    <script type="text/javascript" src="index.js"></script> 
+    <script type="text/javascript" src="/static/js/index.js"></script> 
   </body>
 </html>

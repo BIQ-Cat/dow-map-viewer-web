@@ -7,17 +7,18 @@ let frames = 0;
 
 let msPrev = performance.now();
 
-let keys = new Set()
+let keys = new Set();
 
 document.body.addEventListener("keydown", (ev) => { keys.add(ev.key); }, false);
 document.body.addEventListener("keyup", (ev) => { keys.delete(ev.key); }, false);
 
-setScreen(canvas.width, canvas.height);
 
 
 function renderMap() {
   keys.forEach((key) => { moveCamera(key); });
-  ctx.putImageData(getPixels(), 0, 0);
+
+  const imageData = new ImageData(new Uint8ClampedArray(getPixels()), canvas.width, canvas.height);
+  ctx.putImageData(imageData, 0, 0);
 }
 
 
@@ -41,3 +42,8 @@ setInterval(() => {
   document.getElementById("fps").textContent = `FPS: ${frames}`;
   frames = 0;
 }, 1000)
+
+runWithWASM = function() {
+  setScreen(canvas.width, canvas.height);
+  gameLoop();
+}

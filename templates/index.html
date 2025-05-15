@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<canvas width="800", height="450"></canvas>
+<canvas width="1000", height="550"></canvas>
+<aside>
+  <input type="search" class="form-control" placeholder="Search for a map" />
+  <div class="container">
+  {% for map in maps %}
+    <div class="map">
+      <button data-map="{{map[0]}}">Load</button>
+      <h3>{{ map[1] }}</h3>
+    </div>
+  {% endfor %}
+  </div>
+</aside>
 <script type="module" src="/static/js/index.js"></script>
 {% endblock %}

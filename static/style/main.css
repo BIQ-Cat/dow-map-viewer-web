@@ -21,3 +21,36 @@ header > h1 {
     font-size: 2em;
     font-family: "Felina Gothic";
 }
+
+aside {
+  position: absolute;
+  top: 10%;
+  right: 10px;
+  width: 40%;
+  height: 70%;
+  overflow: scroll;
+}
+
+aside .map {
+  margin-top: 10px;
+}
+
+aside .map * {
+  display: inline;
+}
+
+aside .map button {
+  padding 20px;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 1px 4px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border: 2px inline rgb(117, 116, 122);
+  background: #333;
+  color: white;
+  font-weight: bold;
+}
+
+aside .map button:hover {
+  background: #999;
+}

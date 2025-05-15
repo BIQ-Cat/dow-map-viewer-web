@@ -1,31 +1,5 @@
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
-    <script>
-      window.gameMap = '{{ gameMap | safe }}';
-    </script>
-  </head>
-  <body>
-    <p id="fps">FPS: 0</p>
-    <canvas width="{{width}}" height="{{height}}"></canvas> <!-- width and height are set by server -->
-    <script src="/static/wasm/wasm_exec.js"></script>
-    <script type="text/javascript" src="/static/js/index.js"></script> 
-    <script>
-      if (WebAssembly) {
-        const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.importObject).then(
-          (result) => { 
-            go.run(result.instance);
-
-            runWithWASM();
-          }
-        )
-      } else {
-        alert("WebAssembly is not available in your browser. Stop")
-      }
-    </script>
-  </body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<canvas width="800", height="450"></canvas>
+<script type="module" src="/static/js/index.js"></script>
+{% endblock %}

@@ -1,49 +1,13 @@
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext('2d');
+import { runGame, stopGame } from "./play.js";
 
-const FPS = 60;
-const MS_PER_FRAME = 1000 / FPS;
-let frames = 0;
-
-let msPrev = performance.now();
-
-let keys = new Set();
-
-document.body.addEventListener("keydown", (ev) => { keys.add(ev.key); }, false);
-document.body.addEventListener("keyup", (ev) => { keys.delete(ev.key); }, false);
-
-
-
-function renderMap() {
-  keys.forEach((key) => { moveCamera(key); });
-
-  const imageData = new ImageData(new Uint8ClampedArray(getPixels()), canvas.width, canvas.height);
-  ctx.putImageData(imageData, 0, 0);
-}
-
-
-function gameLoop() {
-  requestAnimationFrame(gameLoop);
-
-  const msNow = performance.now();
-  const msPassed = msNow - msPrev;
-
-  if (msPassed < MS_PER_FRAME) return;
-
-  renderMap();
-  
-  const excessTime = msPassed % MS_PER_FRAME;
-  msPrev = msNow - excessTime;
-
-  frames++
-}
-
-setInterval(() => { 
-  document.getElementById("fps").textContent = `FPS: ${frames}`;
-  frames = 0;
-}, 1000)
-
-runWithWASM = function() {
-  setScreen(canvas.width, canvas.height);
-  gameLoop();
-}
+(function() {
+    const canvasElement = document.querySelector("canvas");
+    const canvasContext = canvasElement.getContext("2d");
+    
+    const preload = new Image();
+    preload.src = "/static/img/default.jpg";
+    preload.addEventListener("load", () => {
+        preload.sizes = ""
+        canvasContext.drawImage(preload, 0, 0, canvasElement.width, canvasElement.height); 
+    })
+}())

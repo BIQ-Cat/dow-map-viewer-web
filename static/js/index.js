@@ -42,7 +42,8 @@ import { runGame, stopGame, canvas, ctx, isRunning } from "./play.js";
         stopGame();
 
         const mapName = el.dataset.map;
-        fetch(`/map/${mapName}`)
+        const id = el.dataset.uid;
+        fetch(`/map/${mapName}?id=${id}`)
           .then((response) => response.text())
           .then((gameMap) => {
             loadGameMap(gameMap);

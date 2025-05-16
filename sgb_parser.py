@@ -1,6 +1,7 @@
 from json import dumps
 
 from PIL import Image
+from flask_wtf.csrf import os
 
 GEOMETRY_HEADER = [68, 65, 84, 65, 72, 77, 65, 80, 208, 7]
 GEOMETRY_END = [68, 65, 84, 65, 84, 84, 89, 80, 210, 7]
@@ -31,15 +32,22 @@ def get_map(map_name):
 
         size = int(len(geometry_data) ** 0.5)
         
-        img = Image.open(f'maps/{map_name}.tga')
-        img = img.resize((size, size))
+        try:
+            img = Image.open(f'maps/{map_name}.tga')
+            img = img.resize((size, size))
 
-        return dumps({
-            'width': size,
-            'height': size,
-            'height_map': geometry_data,
-            'color_map': list(img.getdata())
-        })
+            return dumps({
+                'width': size,
+                'height': size,
+                'height_map': geometry_data,
+                'color_map': list(img.getdata())
+            })
+        except FileNotFoundError:
+            return dumps({
+                'width': size,
+                'height': size,
+                'height_map': geometry_data,
+            })
 
 
 get_map('fata_morga')

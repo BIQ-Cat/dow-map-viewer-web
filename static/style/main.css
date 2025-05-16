@@ -14,9 +14,32 @@ header * {
     display: inline-block;
     margin: 0;
     padding: 0;
+    color: white;
+    text-decoration: none;
 }
 
-header > h1 {
+header ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  float: right;
+}
+
+header li {
+  display: inline;
+}
+
+header li a {
+  display: inline-block;
+  padding: 8px;
+  background-color: #676767;
+}
+
+header li a:hover {
+  background-color: #3489ab;
+}
+
+h1 {
     font-size: 2em;
     font-family: "Felina Gothic";
 }
@@ -59,4 +82,8 @@ aside .map button {
 
 aside .map button:hover {
   background: #999;
+}
+
+form div {
+  margin-bottom: 20px;
 }

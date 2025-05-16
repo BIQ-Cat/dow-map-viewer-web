@@ -1,14 +1,20 @@
-import { runGame, stopGame, canvas, ctx } from "./play.js";
+import { runGame, stopGame, canvas, ctx, isRunning } from "./play.js";
 
 (function() {
-  const bufferSize = canvas.width * canvas.height * 4;
+  canvas.width = innerWidth * 0.56
+  canvas.height = innerHeight * 0.5
+
   const canvasImageData = ctx.createImageData(canvas.width, canvas.height);
 
+  let loaded = false
   const preload = new Image();
   preload.src = "/static/img/default.jpg";
   preload.addEventListener("load", () => {
+    if (loaded) return false
+
     preload.sizes = ""
-    ctx.drawImage(preload, 0, 0, canvas.width, canvas.height); 
+    ctx.drawImage(preload, 0, 0, canvas.width, canvas.height);
+    loaded = true
   })
 
   const go = new Go();
@@ -18,30 +24,30 @@ import { runGame, stopGame, canvas, ctx } from "./play.js";
 
     const exports = result.instance.exports;
 
-    const buffer = exports.memory.buffer;
+    const renderMap = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      exports.getPixels();
+
+      canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, canvas.width * canvas.height * 4));
+
+      ctx.putImageData(canvasImageData, 0, 0);
+    }
+
+    exports.setScreen(canvas.width, canvas.height)
+
     const pixelPoiner = exports.getMemoryBufferPointer();
 
     document.querySelectorAll("aside .map button").forEach((el) => {
       el.addEventListener("click", () => {
         stopGame();
-        ctx.drawImage(preload, 0, 0, canvas.width, canvas.height);
 
         const mapName = el.dataset.map;
         fetch(`/map/${mapName}`)
           .then((response) => response.text())
           .then((gameMap) => {
-            console.log(gameMap);
             loadGameMap(gameMap);
-            exports.setScreen(canvas.width, canvas.height);
 
-            runGame(() => {
-              exports.getPixels();
-
-              canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, bufferSize));
-
-              ctx.clearRect(0, 0, canvas.width, canvas.height)
-              ctx.putImageData(canvasImageData, 0, 0);
-            });
+            runGame(renderMap)
           })
           .catch((err) => console.log(err));
       }, false);

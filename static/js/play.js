@@ -42,15 +42,27 @@ let interval = -1
 
 export function runGame(renderMap) {
   gameStopped = false;
+
   document.body.addEventListener("keydown", addKey, false);
   document.body.addEventListener("keyup", delKey, false);
+
   //interval = setInterval(setFPS, 1000);
+
   gameLoop(renderMap);
+}
+
+export function isRunning() {
+  return !gameStopped
 }
 
 export function stopGame() {
   gameStopped = true;
+
   document.body.removeEventListener("keydown", addKey, false)
   document.body.removeEventListener("keyup", delKey, false);
+
+  keys.clear()
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
   //clearInterval(interval)
 }

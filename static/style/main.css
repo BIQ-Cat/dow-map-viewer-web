@@ -4,7 +4,6 @@ header {
     background-color: #353535;
     padding: 15px;
     color: #cdcdcd;
-    margin-bottom: 15px;
 }
 
 body {
@@ -23,12 +22,19 @@ header > h1 {
 }
 
 aside {
-  position: absolute;
-  top: 10%;
-  right: 10px;
+  float: right;
   width: 40%;
   height: 70%;
   overflow: scroll;
+}
+
+canvas {
+  float: left;
+}
+
+#root {
+  position: relative;
+  padding: 20px;
 }
 
 aside .map {
@@ -40,7 +46,7 @@ aside .map * {
 }
 
 aside .map button {
-  padding 20px;
+  padding: 20px;
   box-sizing: border-box;
   cursor: pointer;
   padding: 1px 4px;

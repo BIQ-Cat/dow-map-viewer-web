@@ -1,5 +1,5 @@
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext('2d');
+export const canvas = document.querySelector("canvas");
+export const ctx = canvas.getContext('2d');
 
 const FPS = 60;
 const MS_PER_FRAME = 1000 / FPS;
@@ -10,24 +10,18 @@ let msPrev = performance.now();
 let keys = new Set();
 
 
-function renderMap() {
-  keys.forEach((key) => { moveCamera(key); });
-
-  const imageData = new ImageData(new Uint8ClampedArray(getPixels()), canvas.width, canvas.height);
-  ctx.putImageData(imageData, 0, 0);
-}
-
 let gameStopped = true
 
-function gameLoop() {
+function gameLoop(renderMap) {
   if (!gameStopped)
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(() => gameLoop(renderMap));
 
   const msNow = performance.now();
   const msPassed = msNow - msPrev;
 
   if (msPassed < MS_PER_FRAME) return;
 
+  keys.forEach((el) => moveCamera(el))
   renderMap();
   
   const excessTime = msPassed % MS_PER_FRAME;
@@ -46,18 +40,17 @@ const delKey = (ev) => { keys.delete(ev.key) }
 
 let interval = -1
 
-export function runGame() {
+export function runGame(renderMap) {
   gameStopped = false;
   document.body.addEventListener("keydown", addKey, false);
   document.body.addEventListener("keyup", delKey, false);
-  setScreen(canvas.width, canvas.height);
-  interval = setInterval(setFPS, 1000);
-  gameLoop();
+  //interval = setInterval(setFPS, 1000);
+  gameLoop(renderMap);
 }
 
 export function stopGame() {
   gameStopped = true;
   document.body.removeEventListener("keydown", addKey, false)
   document.body.removeEventListener("keyup", delKey, false);
-  clearInterval(interval)
+  //clearInterval(interval)
 }

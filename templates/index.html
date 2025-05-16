@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<div id="root">
 <canvas width="1000", height="550"></canvas>
 <aside>
   <input type="search" class="form-control" placeholder="Search for a map" />
@@ -12,5 +13,7 @@
   {% endfor %}
   </div>
 </aside>
+</div>
+<script type="text/javascript" src="/static/wasm/wasm_exec.js"></script>
 <script type="module" src="/static/js/index.js"></script>
 {% endblock %}

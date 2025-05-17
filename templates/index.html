@@ -3,11 +3,12 @@
 <canvas width="1000", height="550"></canvas>
 <aside>
   <input type="search" class="form-control" placeholder="Search for a map" />
-
+  {% if current_user.is_authenticated %}
   <div class="map">
       <a href="/map_new"><button>Add</button></a>
       <h3>&lt;new-map&gt;</h3>
   </div>
+  {% endif %}
   <div class="container">
   {% for map in maps %}
     <div class="map">

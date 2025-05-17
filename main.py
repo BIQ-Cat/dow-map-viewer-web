@@ -82,7 +82,7 @@ def sing_up():
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        if db_sess.query(User).filter().first():
+        if db_sess.query(User).filter(User.login == form.name.data).first():
             return render_template('form.html', title='Sing up', form=form, enctype='application/x-www-form-urlencoded', header='Holy Emperror! Such account already Exists')
         
         user = User(login=form.name.data)

@@ -47,7 +47,7 @@ h1 {
 aside {
   float: right;
   width: 40%;
-  height: 70%;
+  height: 80vh;
   overflow: scroll;
 }
 

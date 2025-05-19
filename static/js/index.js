@@ -30,6 +30,18 @@ function resize(setScreen, preload, loaded) {
   }
 }
 
+function onJoystickStart(ev) {
+  document.addEventListener("touchmove", onJoystickMove);
+  document.addEventListener("touchend", onJoystickEnd);
+}
+
+function onJoystickMove(ev) {}
+
+function onJoystickEnd() {
+  document.removeEventListener("touchmove", onJoystickMove);
+  document.removeEventListener("touchend", onJoystickEnd);
+}
+
 (function() {
   const go = new Go();
   WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.importObject).then((result) => {
@@ -49,14 +61,31 @@ function resize(setScreen, preload, loaded) {
       loaded = true
     })
 
+    const searchMap = document.getElementById("search_map")
+    searchMap.value = ""
+    searchMap.oninput = () => {
+      document.querySelectorAll("aside .map").forEach((el) => {
+        const name = el.querySelector("h3").textContent;
+
+        el.hidden = searchMap.value && !name.toLowerCase().includes(searchMap.value.toLowerCase())
+      })
+    }
+
 
     resize(exports.setScreen)
     window.addEventListener('resize', () => resize(exports.setScreen, preload, loaded))
+
 
     document.getElementById('map-menu').onclick = () => {
       const panel = document.querySelector('aside')
       panel.hidden = !panel.hidden
     }
+    
+  
+    const joystickHandle = document.querySelector('.joystick-handle')
+    const joystickContainer = document.querySelector('.joystick')
+
+    joystickContainer.addEventListener("touchstart", onJoystickStart)
 
     const renderMap = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -68,7 +97,6 @@ function resize(setScreen, preload, loaded) {
       ctx.putImageData(canvasImageData, 0, 0);
     }
 
-    exports.setScreen(canvas.width, canvas.height)
 
     const pixelPoiner = exports.getMemoryBufferPointer();
 

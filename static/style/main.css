@@ -15,6 +15,50 @@ body {
 
 #root {
   overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.joystick {
+  width: 15vmax;
+  height: 15vmax;
+
+  position: absolute;
+  bottom: 15vh;
+  left: 5vw;
+
+  display: none;
+
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
+
+.joystick-outline {
+  width: 100%;
+  height: 100%;
+}
+
+.joystick-handle-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.joystick-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  
+  width: 8vmax;
+  height: 8vmax;
+
+  margin-left: -4vmax;
+  margin-top: -4vmax;
+
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
 header * {
@@ -101,27 +145,31 @@ form div {
 }
 
 @media (max-width: 1000px) {
-    aside {
-      position: absolute;
-      float: none;
-      top: 0;
-      right: 0;
-      background-color: #333;
-      opacity: 0.8;
-      height: 100%;
-    }
+  aside {
+    position: absolute;
+    float: none;
+    top: 0;
+    right: 0;
+    background-color: #333;
+    opacity: 0.8;
+    height: 100%;
+  }
 
-    #root {
-      padding: 0;
-    }
+ .joystick {
+    display: block;
+  } 
+
+  #root {
+    padding: 0;
+  }
 }
 
 @media (max-width: 300px) {
-    header h1 {
-      display: none;
-    }
+  header h1 {
+    display: none;
+  }
 
-    header ul {
-      float: none;
-    }
+  header ul {
+    float: none;
+  }
 }

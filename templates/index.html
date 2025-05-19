@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<canvas width="1000", height="550"></canvas>
+<canvas width="1000", height="550" id="map_canvas"></canvas>
 <aside>
-  <input type="search" class="form-control" placeholder="Search for a map" />
+  <input type="search" class="form-control" id="search_map" placeholder="Search for a map" />
   {% if current_user.is_authenticated %}
   <div class="map">
       <a href="/map_new"><button>Add</button></a>
@@ -12,12 +12,29 @@
   <div class="container">
   {% for map in maps %}
     <div class="map">
-<button data-map="{{map[0]}}" data-uid="{{map[2]}}">Load</button>
+      <button data-map="{{map[0]}}" data-uid="{{map[2]}}">Load</button>
       <h3>{{ map[1] }}</h3>
     </div>
   {% endfor %}
   </div>
 </aside>
+
+<div class="joystick">
+  <svg class="joystick-outline" viewbox="-7 -7 310 310">
+    <path
+      d="M150,0 A150,150 0 1,1 150,300 A150,150 0 1,1 150,0"
+      fill="none"
+      stroke="rgba(255, 255, 255, 0.4)"
+      stroke-width="5"
+      stroke-dasharray="205 30"
+      stroke-dashoffset="221" />
+  </svg>
+
+  <div class="joystick-handle-container">
+    <div class="joystick-handle"></div>
+  </div>
+</div>
+
 <script type="text/javascript" src="/static/wasm/wasm_exec.js"></script>
 <script type="module" src="/static/js/index.js"></script>
 {% endblock %}

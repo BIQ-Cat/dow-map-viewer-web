@@ -21,7 +21,7 @@ function gameLoop(renderMap) {
 
   if (msPassed < MS_PER_FRAME) return;
 
-  keys.forEach((el) => moveCamera(el))
+  keys.forEach((el) => moveCameraByKey(el))
   renderMap();
   
   const excessTime = msPassed % MS_PER_FRAME;

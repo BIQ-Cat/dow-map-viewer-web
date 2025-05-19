@@ -1,33 +1,68 @@
 import { runGame, stopGame, canvas, ctx, isRunning } from "./play.js";
 
+function resize(setScreen, preload, loaded) {
+  const viewport_width = window.innerWidth || document.documentElement.clientWidth;
+  const viewport_height = window.innerHeight || document.documentElement.clientHeight;
+
+  const canvas_width = (viewport_width < 1000) ? viewport_width : viewport_width * 0.55
+  const canvas_height = (viewport_height < 600) ? viewport_height : viewport_height * 0.5
+
+  if (viewport_width < 1000) {
+    document.getElementById('map-menu').style.display = 'inline-block'
+  } else {
+    document.getElementById('map-menu').style.display = 'none'
+    document.querySelector('aside').hidden = false
+  }
+
+  if (viewport_width < 490) {
+    document.querySelector('header h1').textContent = 'DMV'
+  } else {
+    document.querySelector('header h1').textContent = 'DoW Map Viewer'
+  }
+
+  canvas.width = canvas_width
+  canvas.height = canvas_height
+
+  setScreen(canvas_width, canvas_height);
+
+  if (!isRunning() && loaded) {
+    ctx.drawImage(preload, 0, 0, canvas_width, canvas_height)
+  }
+}
+
 (function() {
-  canvas.width = innerWidth * 0.56
-  canvas.height = innerHeight * 0.5
-
-  const canvasImageData = ctx.createImageData(canvas.width, canvas.height);
-
-  let loaded = false
-  const preload = new Image();
-  preload.src = "/static/img/default.jpg";
-  preload.addEventListener("load", () => {
-    if (loaded) return false
-
-    preload.sizes = ""
-    ctx.drawImage(preload, 0, 0, canvas.width, canvas.height);
-    loaded = true
-  })
-
   const go = new Go();
-
   WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.importObject).then((result) => {
     go.run(result.instance);
 
     const exports = result.instance.exports;
 
+    let loaded = false
+    const preload = new Image();
+    preload.src = "/static/img/default.jpg";
+
+    preload.addEventListener("load", () => {
+      if (loaded) return false
+
+      preload.sizes = ""
+      ctx.drawImage(preload, 0, 0, canvas.width, canvas.height);
+      loaded = true
+    })
+
+
+    resize(exports.setScreen)
+    window.addEventListener('resize', () => resize(exports.setScreen, preload, loaded))
+
+    document.getElementById('map-menu').onclick = () => {
+      const panel = document.querySelector('aside')
+      panel.hidden = !panel.hidden
+    }
+
     const renderMap = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       exports.getPixels();
 
+      const canvasImageData = ctx.createImageData(canvas.width, canvas.height)
       canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, canvas.width * canvas.height * 4));
 
       ctx.putImageData(canvasImageData, 0, 0);

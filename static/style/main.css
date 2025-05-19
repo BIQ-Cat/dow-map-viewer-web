@@ -1,5 +1,5 @@
 header {
-    width: 100%;
+    width: 100vw;
     height: 10%;
     background-color: #353535;
     padding: 15px;
@@ -8,6 +8,13 @@ header {
 
 body {
     margin: 0;
+    background-color: #121212;
+    overflow: hidden;
+    height: 100%;
+}
+
+#root {
+  overflow: hidden;
 }
 
 header * {
@@ -46,7 +53,7 @@ h1 {
 
 aside {
   float: right;
-  width: 40%;
+  width: 40vw;
   height: 80vh;
   overflow: scroll;
 }
@@ -58,6 +65,7 @@ canvas {
 #root {
   position: relative;
   padding: 20px;
+  background-color: #121212;
 }
 
 aside .map {
@@ -86,4 +94,34 @@ aside .map button:hover {
 
 form div {
   margin-bottom: 20px;
+}
+
+#map-menu {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+    aside {
+      position: absolute;
+      float: none;
+      top: 0;
+      right: 0;
+      background-color: #333;
+      opacity: 0.8;
+      height: 100%;
+    }
+
+    #root {
+      padding: 0;
+    }
+}
+
+@media (max-width: 300px) {
+    header h1 {
+      display: none;
+    }
+
+    header ul {
+      float: none;
+    }
 }

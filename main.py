@@ -126,7 +126,7 @@ def index():
         db_sess = db_session.create_session()
         maps.extend(map(lambda x: (x.map_file, x.map_name, x.user_id), db_sess.query(Map).filter(Map.user_id == current_user.id)))
 
-    return render_template('index.html', title='DoW Map Viewer', maps=maps)
+    return render_template('index.html', title='DoW Map Viewer', maps=maps, show_map_menu=True)
 
 
 if __name__ == '__main__':

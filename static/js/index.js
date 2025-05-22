@@ -1,4 +1,7 @@
-import { runGame, stopGame, canvas, ctx, isRunning } from "./play.js";
+import { GameLoop } from "./gameLoop.js"
+
+const canvas = document.querySelector("canvas")
+const ctx = canvas.getContext('2d')
 
 const joystickHandle = document.querySelector('.joystick-handle')
 const joystickContainer = document.querySelector('.joystick')
@@ -237,7 +240,7 @@ function onJoystickEnd() {
       })
     }
 
-    const renderMap = () => {
+    GameLoop.onFrame = () => {
       exports.moveCameraByPerc(moveX, moveY, moveAngle, movePitch, moveUp, moveDown)
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -254,16 +257,16 @@ function onJoystickEnd() {
 
     document.querySelectorAll("aside .map button").forEach((el) => {
       el.addEventListener("click", () => {
-        stopGame();
+        GameLoop.stop();
 
         const mapName = el.dataset.map;
         const id = el.dataset.uid;
         fetch(`/map/${mapName}?id=${id}`)
           .then((response) => response.text())
           .then((gameMap) => {
-            loadGameMap(gameMap);
+            setGameMap(gameMap);
 
-            runGame(renderMap)
+            GameLoop.start()
           })
           .catch((err) => console.log(err));
       }, false);

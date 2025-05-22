@@ -1,26 +1,7 @@
 import { GameLoop } from "./gameLoop.js"
-
-const canvas = document.querySelector("canvas")
-const ctx = canvas.getContext('2d')
-
-const joystickHandle = document.querySelector('.joystick-handle')
-const joystickContainer = document.querySelector('.joystick')
-
-let swipeStartX = 0
-let swipeStartY = 0
-
-let swipeTouch = 0
-let joystickTouch = 0
-
-let numberOfTouches = 0
-
-let moveX = 0
-let moveY = 0
-let moveAngle = 0
-let movePitch = 0
-let moveUp = false
-let moveDown = false
-
+import { canvas, ctx, joystickContainer, heightController } from "./elements.js";
+import KeyboardMovement from "./keyboard.js";
+import TouchMovement from "./touch.js";
 
 function isTouchDevice() {
   return (('ontouchstart' in window) ||
@@ -59,117 +40,6 @@ function resize(setScreen, preload, loaded) {
   }
 }
 
-
-function calculateAngle(centerX, centerY, pointX, pointY) {
-  const deltaX = pointX - centerX;
-  const deltaY = pointY - centerY;
-
-  const angleInRadians = Math.atan2(deltaY, deltaX);
-
-  return angleInRadians;
-}
-
-function deg2rad(angle) {
-  let angleInDegrees = (angle * 180) / Math.PI + 90;
-  if (angleInDegrees < 0) 
-    angleInDegrees += 360
-
-  return angleInDegrees
-}
-
-
-function calculateCircleData(clientX, clientY) {
-  const {x, y, width, height} = joystickContainer.getBoundingClientRect()
-
-  const centerX = x + width / 2
-  const centerY = y + height / 2
-  let distance = Math.sqrt(
-    Math.pow(clientX - centerX, 2) +
-    Math.pow(clientY - centerY, 2)
-  )
-
-  distance = Math.min(Math.max(distance, 0), height / 2)
-
-  const angle = calculateAngle(centerX, centerY, clientX, clientY)
-
-  return {
-    angle: deg2rad(angle),
-    distance,
-    percX: -distance * Math.sin(angle) / (width / 4),
-    percY: -distance * Math.cos(angle) / (height / 2)
-  }
-}
-
-function onSwipeStart(ev) {
-  swipeTouch = numberOfTouches;
-  numberOfTouches++;
-
-  const { clientX, clientY } = ev.touches[swipeTouch]
-  swipeStartX = clientX;
-  swipeStartY = clientY;
-
-  document.addEventListener("touchmove", onSwipeMove);
-  document.addEventListener("touchend", onSwipeEnd);
-}
-
-function onSwipeMove(ev) {
-  const { clientX, clientY } = ev.touches[swipeTouch];
-
-  const deltaX = clientX - swipeStartX;
-  const deltaY = clientY - swipeStartY;
-
-  moveAngle = deltaX / 3
-  movePitch = deltaY / 3
-
-  swipeStartX = clientX
-  swipeStartY = clientY
-}
-
-function onSwipeEnd() {
-  numberOfTouches--;
-
-  document.removeEventListener("touchmove", onSwipeMove)
-  document.removeEventListener("touchend", onSwipeEnd)
-
-  moveAngle = 0;
-  movePitch = 0;
-}
-
-function onJoystickStart(ev) {
-  joystickTouch = numberOfTouches;
-  numberOfTouches++;
-
-  onJoystickMove(ev);
-  document.addEventListener("touchmove", onJoystickMove);
-  document.addEventListener("touchend", onJoystickEnd);
-}
-
-function onJoystickMove(ev) {
-
-  const { angle, distance, percX, percY } = calculateCircleData(
-    ev.touches[joystickTouch].clientX,
-    ev.touches[joystickTouch].clientY
-  )
-
-  joystickHandle.style.transform = `translateY(${-distance}px)`;
-  joystickHandle.parentElement.style.transform = `rotate(${angle}deg)`;
-
-  moveX = percX;
-  moveY = percY;
-}
-
-function onJoystickEnd() {
-  numberOfTouches--;
-
-  document.removeEventListener("touchmove", onJoystickMove);
-  document.removeEventListener("touchend", onJoystickEnd);
-
-  joystickHandle.style.transform = "";
-  joystickHandle.parentElement.style.transform = "";
-
-  moveX = 0;
-  moveY = 0;
-}
 
 (function() {
   const go = new Go();
@@ -211,37 +81,19 @@ function onJoystickEnd() {
     }
 
 
-    joystickContainer.hidden = !isTouchDevice()
-    document.querySelector(".height-controller").hidden = !isTouchDevice()
+    joystickContainer.hidden = true;
+    heightController.hidden = true;
+
+    let movement = new KeyboardMovement();
 
     if (isTouchDevice()) {
-      joystickContainer.addEventListener("touchstart", onJoystickStart)
-      canvas.addEventListener("touchstart", onSwipeStart)
-      
-      const upBtn = document.getElementById("up")
-      const downBtn = document.getElementById("down")
-
-      upBtn.addEventListener("touchstart", () => {
-        upBtn.style.opacity = 1;
-        moveUp = true;
-      })
-      upBtn.addEventListener("touchend", () => {
-        upBtn.style.opacity = 0.4;
-        moveUp = false;
-      })
-
-      downBtn.addEventListener("touchstart", () => {
-        downBtn.style.opacity = 1;
-        moveDown = true;
-      })
-      downBtn.addEventListener("touchend", () => {
-        downBtn.style.opacity = 0.4;
-        moveDown = false;
-      })
+      movement = new TouchMovement();
     }
 
+    movement.enable();
+
     GameLoop.onFrame = () => {
-      exports.moveCameraByPerc(moveX, moveY, moveAngle, movePitch, moveUp, moveDown)
+      exports.moveCameraByPerc(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       exports.getPixels();

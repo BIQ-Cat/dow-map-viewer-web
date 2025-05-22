@@ -1,44 +1,46 @@
-export const KeyboardMovement = {
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
-    up: false,
-    down: false,
-    angleLeft: false,
-    angleRight: false,
-    angleUp: false,
-    angleDown: false,
+import Movement from "./movement.js";
 
-    enable: () => {
-        document.body.addEventListener("keydown", (ev) => changeKeys(ev.key.toLowerCase(), true))
-        document.body.addEventListener("keyup", (ev) => changeKeys(ev.key.toLowerCase(), false))
-    },
-}
+export default class KeyboardMovement extends Movement {
+  
+  enable() {
+    document.body.addEventListener("keydown", this.#onKeyDown)
+    document.body.addEventListener("keyup", this.#onKeyUp)
+  }
 
-const changeKeys = (key, value) => {
+  reset() {
+    document.body.removeEventListener("keydown", this.#onKeyDown)
+    document.body.removeEventListener("keyup", this.#onKeyUp)
+    super.reset()
+  }
+
+  #onKeyDown(ev) { this.#changeKeys(ev.key.toLowerCase(), 1) }
+  #onKeyUp(ev) { this.#changeKeys(ev.key.toLowerCase(), 0) }
+
+  #changeKeys(key, value) {
     switch(key) {
         case "shift":
-            KeyboardMovement.up = value;
+            this.moveHeight = value;
             break;
         case " ":
-            KeyboardMovement.down = value;
+            this.moveHeight = -value;
             break;
         case "w":
-            KeyboardMovement.forward = value;
+            this.moveX = value;
         case "s":
-            KeyboardMovement.backward = value;
+            this.moveX = -value;
         case "a":
-            KeyboardMovement.left = value;
+            this.moveY = -value;
         case "d":
-            KeyboardMovement.right = value;
+            this.moveY = value;
         case "arrowleft":
-            KeyboardMovement.angleLeft = value;
+            this.moveAngle = -value;
         case "arrowright":
-            KeyboardMovement.angleRight = value;
+            this.moveAngle = value;
         case "arrowup":
-            KeyboardMovement.angleUp = value;
+            this.movePitch = value;
         case "arrowdown":
-            KeyboardMovement.angleDown = value;
+            this.movePitch = -value;
     }
 }
+}
+

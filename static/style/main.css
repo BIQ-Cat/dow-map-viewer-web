@@ -1,5 +1,5 @@
 header {
-    width: 100%;
+    width: 100vw;
     height: 10%;
     background-color: #353535;
     padding: 15px;
@@ -8,6 +8,56 @@ header {
 
 body {
     margin: 0;
+    background-color: #121212;
+    overflow: hidden;
+    height: 100%;
+    color: #fff;
+}
+
+#root {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.joystick {
+  width: 15vmax;
+  height: 15vmax;
+
+  position: absolute;
+  bottom: 15vh;
+  left: 5vw;
+
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
+
+.joystick-outline {
+  width: 100%;
+  height: 100%;
+}
+
+.joystick-handle-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.joystick-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  
+  width: 8vmax;
+  height: 8vmax;
+
+  margin-left: -4vmax;
+  margin-top: -4vmax;
+
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
 header * {
@@ -46,9 +96,10 @@ h1 {
 
 aside {
   float: right;
-  width: 40%;
+  width: 40vw;
   height: 80vh;
   overflow: scroll;
+  z-index: 100;
 }
 
 canvas {
@@ -58,6 +109,7 @@ canvas {
 #root {
   position: relative;
   padding: 20px;
+  background-color: #121212;
 }
 
 aside .map {
@@ -86,4 +138,56 @@ aside .map button:hover {
 
 form div {
   margin-bottom: 20px;
+}
+
+#map-menu {
+  display: none;
+}
+
+.height-controller {
+  position: absolute;
+  bottom: 15vh;
+  right: 5vw;
+  width: 15vmax;
+  height: 15vmax;
+}
+
+.height-controller>button {
+  width: 100%;
+  height: 7vmax;
+  background-color: #fff;
+  opacity: 0.4;
+  border: none;
+  margin-bottom: 1vmax;
+  border-radius: 5px;
+}
+
+.height-controller>button:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1000px) {
+  aside {
+    position: absolute;
+    float: none;
+    top: 0;
+    right: 0;
+    background-color: #333;
+    opacity: 0.8;
+    height: 100%;
+  }
+
+  #root {
+    padding: 0;
+  }
+}
+
+@media (max-width: 300px) {
+  header h1 {
+    display: none;
+  }
+
+  header ul {
+    float: none;
+  }
 }

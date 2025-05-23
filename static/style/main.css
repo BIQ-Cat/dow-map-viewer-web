@@ -60,6 +60,31 @@ body {
   background-color: rgba(255, 255, 255, 0.6);
 }
 
+#fps {
+  position: absolute;
+  top: 10%;
+  left: 5%;
+}
+
+.settings {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+  width: 60vw;
+  height: 30%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-row: 1fr;
+  grid-auto-flow: row dense;
+}
+
+#toggle-settings {
+  position: absolute;
+  top: 55%;
+  left: 10px;
+}
+
 header * {
     display: inline-block;
     margin: 0;
@@ -99,7 +124,7 @@ aside {
   width: 40vw;
   height: 80vh;
   overflow: scroll;
-  z-index: 100;
+  z-index: 50;
 }
 
 canvas {
@@ -179,6 +204,25 @@ form div {
 
   #root {
     padding: 0;
+  }
+}
+
+@media (max-width: 400px) { 
+  .settings {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-height: 500px) {
+  .settings {
+    opacity: 0.8;
+    background-color: #333;
+  }
+};
+
+@media (max-height: 250px) {
+  .settings {
+    height: 100vh;
   }
 }
 

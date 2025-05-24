@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <canvas width="1000", height="550"></canvas>
+<canvas width="1000", height="550" id="map_canvas"></canvas>
 <aside>
   <input type="search" class="form-control" placeholder="Search for a map" />
   {% if current_user.is_authenticated %}

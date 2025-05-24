@@ -1,7 +1,6 @@
 from json import dumps
 
 from PIL import Image
-from flask_wtf.csrf import os
 
 GEOMETRY_HEADER = [68, 65, 84, 65, 72, 77, 65, 80, 208, 7]
 GEOMETRY_END = [68, 65, 84, 65, 84, 84, 89, 80, 210, 7]

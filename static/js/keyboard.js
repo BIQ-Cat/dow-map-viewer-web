@@ -13,27 +13,27 @@ export default class KeyboardMovement extends Movement {
     super.reset()
   }
 
-  onKeyDown = (ev) => { this.#changeKeys(ev.key.toLowerCase(), 1) }
-  onKeyUp = (ev) => { this.#changeKeys(ev.key.toLowerCase(), 0) }
+  onKeyDown = (ev) => { this.#changeKeys(ev.code.toLowerCase(), 1) }
+  onKeyUp = (ev) => { this.#changeKeys(ev.code.toLowerCase(), 0) }
 
   #changeKeys(key, value) {
     switch(key) {
-        case "shift":
+        case "shiftleft":
             this.moveHeight = -value;
             break;
-        case " ":
+        case "space":
             this.moveHeight = value;
             break;
-        case "w":
+        case "keyw":
             this.moveX = value;
             break;
-        case "s":
+        case "keys":
             this.moveX = -value;
             break;
-        case "a":
+        case "keya":
             this.moveY = value;
             break;
-        case "d":
+        case "keyd":
             this.moveY = -value;
             break;
         case "arrowleft":

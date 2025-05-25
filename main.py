@@ -12,7 +12,7 @@ from data.map import Map
 from forms.upload import UploadForm
 from forms.user import LoginForm
 
-from sgb_parser import get_map
+from sgb_parser import get_data
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'LapplandTheDecaJessica'
@@ -35,9 +35,9 @@ def load_user(user_id):
 def load_map(map_name):
     uid = int(request.args.get("id", "-1"))
     if uid == -1:
-        return get_map(map_name)
+        return get_data(map_name)
     else:
-        return get_map(f'{uid}/{map_name}')
+        return get_data(f'{uid}/{map_name}')
 
 
 @login_required
@@ -58,7 +58,7 @@ def upload_map():
         sgb.save(os.path.join(path_to_maps, filename_sgb + '.sgb'))
 
         tga = form.tga_file.data
-        if tga != None:
+        if tga is not None:
             tga.save(os.path.join(path_to_maps, filename_sgb + '.tga'))
         
         db_sess = db_session.create_session()

@@ -9,3 +9,7 @@ export const swipeStartElement = canvas;
 export const upButton = document.getElementById("up")
 export const downButton = document.getElementById("down")
 export const heightController = document.querySelector(".height-controller")
+
+export const fps = document.getElementById("fps")
+export const settingsController = document.querySelector(".settings")
+export const toggleSettingsButton = document.getElementById("toggle-settings")

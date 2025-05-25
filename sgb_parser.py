@@ -2,51 +2,72 @@ from json import dumps
 
 from PIL import Image
 
-GEOMETRY_HEADER = [68, 65, 84, 65, 72, 77, 65, 80, 208, 7]
-GEOMETRY_END = [68, 65, 84, 65, 84, 84, 89, 80, 210, 7]
 
+def fetch_section(filename: str, 
+                  header: list, end: list,
+                  offset: int) -> list:
+    
+    with open(f'maps/{filename}.sgb', 'rb') as f:
+        data = f.read()
+        res = list()
 
-def get_map(map_name):
-    with open(f'maps/{map_name}.sgb', 'rb') as map_file:
-        map_data = map_file.read()
-        geometry_data = list()
+        header_len = len(header)
+        end_len = len(end)
 
-        is_reading = False
+        is_fetching = False
         p = 0
 
         while True:
-            if not is_reading:
-                if [map_data[p+i] for i in range(10)] == GEOMETRY_HEADER:
-                    is_reading = True
+            if not is_fetching:
+                if [data[p+i] for i in range(header_len)] == header:
+                    is_fetching = True
 
-                    p += 27
+                    p += offset
 
             else:
-                if [map_data[p+i] for i in range(10)] == GEOMETRY_END:
+                if [data[p+i] for i in range(end_len)] == end:
                     break
 
-                geometry_data.append(map_data[p])
+                res.append(data[p])
 
             p += 1
 
-        size = int(len(geometry_data) ** 0.5)
-        
-        try:
-            img = Image.open(f'maps/{map_name}.tga')
-            img = img.resize((size, size))
-
-            return dumps({
-                'width': size,
-                'height': size,
-                'height_map': geometry_data,
-                'color_map': list(img.getdata())
-            })
-        except FileNotFoundError:
-            return dumps({
-                'width': size,
-                'height': size,
-                'height_map': geometry_data,
-            })
+    return res
 
 
-get_map('fata_morga')
+def get_data(filename):
+    height_map = fetch_section(
+        filename,
+        [68, 65, 84, 65, 72, 77, 65, 80, 208, 7],
+        [68, 65, 84, 65, 84, 84, 89, 80, 210, 7],
+        27
+    )
+    passability_map = list(map(lambda x: True if x == 2 else False, fetch_section(
+        filename,
+        [80, 97, 115, 115, 97, 98, 105, 108, 105, 116, 121, 32, 77, 97, 112],
+        [68, 65, 84, 65, 80, 82, 77, 80, 208],
+        27
+    )))
+
+    size = int(len(height_map) ** 0.5)
+
+    try:
+        img = Image.open(f'maps/{filename}.tga')
+        img = img.resize((size, size))
+
+        return dumps({
+            'width': size,
+            'height': size,
+            'height_map': height_map,
+            'passability_map': passability_map,
+            'color_map': list(img.getdata())
+        })
+
+    except FileNotFoundError:
+        return dumps({
+            'width': size,
+            'height': size,
+            'height_map': height_map,
+            'color_map': None,
+            'passability_map': passability_map,
+        })

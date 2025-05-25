@@ -12,6 +12,7 @@ body {
     overflow: hidden;
     height: 100%;
     color: #fff;
+    touch-action: none;
 }
 
 #root {

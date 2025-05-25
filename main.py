@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request, send_file
 from flask.helpers import redirect
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -12,6 +12,7 @@ from data.map import Map
 from forms.upload import UploadForm
 from forms.user import LoginForm
 
+from manifest import manifest
 from sgb_parser import get_data
 
 app = Flask(__name__)
@@ -39,6 +40,17 @@ def load_map(map_name):
     else:
         return get_data(f'{uid}/{map_name}')
 
+@app.route('/fallback')
+def fallback():
+    return render_template('fallback.html')
+
+@app.route('/manifest.json')
+def get_manifest():
+    return jsonify(manifest)
+
+@app.route('/favicon.<ext>')
+def get_favicon(ext):
+    return send_file(f'favicon.{ext}') 
 
 @login_required
 @app.route('/map_new', methods=['GET', 'POST'])

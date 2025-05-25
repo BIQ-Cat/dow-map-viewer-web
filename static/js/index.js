@@ -41,6 +41,24 @@ function resize(setScreen, preload) {
   preload.render()
 }
 
+if ('serviceWorker' in navigator) {
+    // Весь код регистрации у нас асинхронный.
+  navigator.serviceWorker.register('/static/js/sw.js')
+    .then((reg) => {
+      reg.onupdatefound = () => {
+        const installingWorker = reg.installing;
+
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('New service worker version available.');
+
+            showUpdateNotification();
+          }
+        };  
+      };
+    })
+    .catch((err) => console.log(err));
+}
 
 
 const go = new Go();

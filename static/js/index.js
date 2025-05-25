@@ -80,11 +80,13 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
 
   joystickContainer.hidden = true;
   heightController.hidden = true;
+  toggleSettingsButton.hidden = true;
 
   let movement = new KeyboardMovement();
 
   if (isTouchDevice()) {
     settingsController.hidden = true;
+    toggleSettingsButton.hidden = false;
     movement = new TouchMovement();
   }
 

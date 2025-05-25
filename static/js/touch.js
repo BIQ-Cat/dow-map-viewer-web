@@ -19,8 +19,8 @@ export default class TouchMovement extends Movement {
     heightController.hidden = false;
     swipeStartElement.hidden = false;
     
-    joystickContainer.addEventListener("touchstart", this.#onJoystickStart);
-    swipeStartElement.addEventListener("touchstart", this.#onSwipeStart);
+    joystickContainer.addEventListener("touchstart", this.onJoystickStart);
+    swipeStartElement.addEventListener("touchstart", this.onSwipeStart);
 
     upButton.addEventListener("touchstart", () => {
       upButton.style.opacity = 1;
@@ -75,8 +75,8 @@ export default class TouchMovement extends Movement {
 
     const angle = this.#calculateJoystickAngle(centerX, centerY, clientX, clientY)
 
-    this.moveX = distance * Math.cos(angle) / (width / 2)
-    this.moveY = distance * Math.sin(angle) / (height / 2)
+    this.moveX = -distance * Math.sin(angle) / (width / 2)
+    this.moveY = -distance * Math.cos(angle) / (height / 2)
 
     return {
       angle: this.#calculateAngleCSS(angle),
@@ -85,17 +85,19 @@ export default class TouchMovement extends Movement {
   }
   
 
-  #onJoystickStart(ev) {
+  onJoystickStart = (ev) => {
     this.joystickTouch = this.numberOfTouches;
     this.numberOfTouches++;
 
-    this.#onJoystickMove(ev);
+    console.log(this)
 
-    document.addEventListener("touchmove", this.#onJoystickMove);
-    document.addEventListener("touchend", this.#onJoystickEnd);
+    this.onJoystickMove(ev);
+
+    document.addEventListener("touchmove", this.onJoystickMove);
+    document.addEventListener("touchend", this.onJoystickEnd);
   }
 
-  #onJoystickMove(ev) {
+  onJoystickMove = (ev) => {
     const { angle, distance } = this.#calculateJoystickData(
       ev.touches[this.joystickTouch].clientX,
       ev.touches[this.joystickTouch].clientY,
@@ -105,11 +107,11 @@ export default class TouchMovement extends Movement {
     joystickHandle.parentElement.style.transform = `rotate(${angle}deg)`;
   }
 
-  #onJoystickEnd() {
+  onJoystickEnd = () => {
     this.numberOfTouches--;
 
-    document.removeEventListener("touchmove", this.#onJoystickMove);
-    document.removeEventListener("touchend", this.#onJoystickEnd);
+    document.removeEventListener("touchmove", this.onJoystickMove);
+    document.removeEventListener("touchend", this.onJoystickEnd);
 
     joystickHandle.style.transform = "";
     joystickHandle.parentElement.style.transform = "";
@@ -119,7 +121,7 @@ export default class TouchMovement extends Movement {
   }
 
   
-  #onSwipeStart(ev) {
+  onSwipeStart = (ev) => {
     this.swipeTouch = this.numberOfTouches;
     this.numberOfTouches++;
 
@@ -127,11 +129,11 @@ export default class TouchMovement extends Movement {
     this.swipeStartX = clientX;
     this.swipeStartY = clientY;
 
-    document.addEventListener("touchmove", this.#onSwipeMove);
-    document.addEventListener("touchend", this.#onSwipeEnd);
+    document.addEventListener("touchmove", this.onSwipeMove);
+    document.addEventListener("touchend", this.onSwipeEnd);
   }
 
-  #onSwipeMove(ev) {
+  onSwipeMove = (ev) => {
     const { clientX, clientY } = ev.touches[this.swipeTouch];
     
     const deltaX = clientX - this.swipeStartX;
@@ -144,11 +146,11 @@ export default class TouchMovement extends Movement {
     this.swipeStartY = clientY;
   }
 
-  #onSwipeEnd() {
+  onSwipeEnd = () => {
     this.numberOfTouches--;
 
-    document.removeEventListener("touchmove", this.#onSwipeMove);
-    document.removeEventListener("touchend", this.#onSwipeEnd);
+    document.removeEventListener("touchmove", this.onSwipeMove);
+    document.removeEventListener("touchend", this.onSwipeEnd);
 
     this.moveAngle = 0;
     this.movePitch = 0;

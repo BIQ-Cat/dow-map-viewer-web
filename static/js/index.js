@@ -2,6 +2,7 @@ import { GameLoop } from "./gameLoop.js"
 import { canvas, ctx, joystickContainer, heightController } from "./elements.js";
 import KeyboardMovement from "./keyboard.js";
 import TouchMovement from "./touch.js";
+import { Preload } from "./canvas.js";
 
 function isTouchDevice() {
   return (('ontouchstart' in window) ||
@@ -10,7 +11,7 @@ function isTouchDevice() {
 }
 
 
-function resize(setScreen, preload, loaded) {
+function resize(setScreen, preload) {
   const viewport_width = window.innerWidth || document.documentElement.clientWidth;
   const viewport_height = window.innerHeight || document.documentElement.clientHeight;
 
@@ -35,94 +36,79 @@ function resize(setScreen, preload, loaded) {
 
   setScreen(canvas_width, canvas_height);
 
-  if (!isRunning() && loaded) {
-    ctx.drawImage(preload, 0, 0, canvas_width, canvas_height)
-  }
+  preload.render()
 }
 
 
-(function() {
-  const go = new Go();
-  WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.importObject).then((result) => {
-    go.run(result.instance);
 
-    const exports = result.instance.exports;
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.importObject).then((result) => {
+  go.run(result.instance);
 
-    let loaded = false
-    const preload = new Image();
-    preload.src = "/static/img/default.jpg";
+  const exports = result.instance.exports;
 
-    preload.addEventListener("load", () => {
-      if (loaded) return false
+  const preload = new Preload("/static/img/default.jpg")
 
-      preload.sizes = ""
-      ctx.drawImage(preload, 0, 0, canvas.width, canvas.height);
-      loaded = true
+  const searchMap = document.getElementById("search_map")
+  searchMap.value = ""
+  searchMap.oninput = () => {
+    document.querySelectorAll("aside .map").forEach((el) => {
+      const name = el.querySelector("h3").textContent;
+
+      el.hidden = searchMap.value && !name.toLowerCase().includes(searchMap.value.toLowerCase())
     })
-
-    const searchMap = document.getElementById("search_map")
-    searchMap.value = ""
-    searchMap.oninput = () => {
-      document.querySelectorAll("aside .map").forEach((el) => {
-        const name = el.querySelector("h3").textContent;
-
-        el.hidden = searchMap.value && !name.toLowerCase().includes(searchMap.value.toLowerCase())
-      })
-    }
+  }
 
 
-    resize(exports.setScreen)
-    window.addEventListener('resize', () => resize(exports.setScreen, preload, loaded))
+  resize(exports.setScreen, preload)
+  window.addEventListener('resize', () => resize(exports.setScreen, preload))
 
 
-    document.getElementById('map-menu').onclick = () => {
-      const panel = document.querySelector('aside')
-      panel.hidden = !panel.hidden
-    }
+  document.getElementById('map-menu').onclick = () => {
+    const panel = document.querySelector('aside')
+    panel.hidden = !panel.hidden
+  }
 
 
-    joystickContainer.hidden = true;
-    heightController.hidden = true;
+  joystickContainer.hidden = true;
+  heightController.hidden = true;
 
-    let movement = new KeyboardMovement();
+  let movement = new KeyboardMovement();
 
-    if (isTouchDevice()) {
-      movement = new TouchMovement();
-    }
+  if (isTouchDevice()) {
+    movement = new TouchMovement();
+  }
 
-    movement.enable();
+  movement.enable();
 
-    GameLoop.onFrame = () => {
-      exports.moveCameraByPerc(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
+  const pixelPoiner = exports.getMemoryBufferPointer();
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      exports.getPixels();
+  GameLoop.onFrame = () => {
+    exports.moveCamera(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
 
-      const canvasImageData = ctx.createImageData(canvas.width, canvas.height)
-      canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, canvas.width * canvas.height * 4));
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    exports.loadPixels();
 
-      ctx.putImageData(canvasImageData, 0, 0);
-    }
+    const canvasImageData = ctx.createImageData(canvas.width, canvas.height)
+    canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, canvas.width * canvas.height * 4));
 
+    ctx.putImageData(canvasImageData, 0, 0);
+  }
 
-    const pixelPoiner = exports.getMemoryBufferPointer();
+  document.querySelectorAll("aside .map button").forEach((el) => {
+    el.addEventListener("click", () => {
+      GameLoop.stop();
 
-    document.querySelectorAll("aside .map button").forEach((el) => {
-      el.addEventListener("click", () => {
-        GameLoop.stop();
+      const mapName = el.dataset.map;
+      const id = el.dataset.uid;
+      fetch(`/map/${mapName}?id=${id}`)
+        .then((response) => response.text())
+        .then((gameMap) => {
+          setGameMap(gameMap);
 
-        const mapName = el.dataset.map;
-        const id = el.dataset.uid;
-        fetch(`/map/${mapName}?id=${id}`)
-          .then((response) => response.text())
-          .then((gameMap) => {
-            setGameMap(gameMap);
-
-            GameLoop.start()
-          })
-          .catch((err) => console.log(err));
-      }, false);
+          GameLoop.start()
+        })
+        .catch((err) => console.log(err));
+    }, false);
   })
-  });
-
-}())
+});

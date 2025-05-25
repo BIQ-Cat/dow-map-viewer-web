@@ -38,7 +38,7 @@ export const GameLoop = {
         frames = 0;
       }, 1000);
     
-    gameLoopWrapper()
+    GameLoop.gameLoopWrapper()
   },
 
   stop: () => {

@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <canvas width="1000", height="550" id="map_canvas"></canvas>
+<span id="fps"></span>
+<button id="toggle-settings">Toggle settings</button>
+<div class="settings">
+  <button id="toggle-passability">Toggle passability</button>
+  <button id="toggle-fps">Toggle FPS</button>
+</div>
 <aside>
   <input type="search" class="form-control" id="search_map" placeholder="Search for a map" />
   {% if current_user.is_authenticated %}

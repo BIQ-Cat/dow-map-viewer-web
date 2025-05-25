@@ -1,5 +1,6 @@
 import { GameLoop } from "./gameLoop.js"
-import { canvas, ctx, joystickContainer, heightController } from "./elements.js";
+import { canvas, ctx, joystickContainer, heightController, fps, settingsController, toggleSettingsButton } from "./elements.js";
+import { setupSettingsButtons, showPassable } from "./settings.js";
 import KeyboardMovement from "./keyboard.js";
 import TouchMovement from "./touch.js";
 import { Preload } from "./canvas.js";
@@ -43,6 +44,12 @@ function resize(setScreen, preload) {
 
 const go = new Go();
 WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.importObject).then((result) => {
+  GameLoop.renderFPS = (frames) => {
+    fps.textContent = `FPS: ${frames}`;
+  }
+  GameLoop.enableFPS = true;
+
+  
   go.run(result.instance);
 
   const exports = result.instance.exports;
@@ -58,6 +65,7 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
       el.hidden = searchMap.value && !name.toLowerCase().includes(searchMap.value.toLowerCase())
     })
   }
+  setupSettingsButtons();
 
 
   resize(exports.setScreen, preload)
@@ -76,6 +84,7 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
   let movement = new KeyboardMovement();
 
   if (isTouchDevice()) {
+    settingsController.hidden = true;
     movement = new TouchMovement();
   }
 
@@ -87,7 +96,7 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
     exports.moveCamera(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    exports.loadPixels();
+    exports.loadPixels(showPassable);
 
     const canvasImageData = ctx.createImageData(canvas.width, canvas.height)
     canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, canvas.width * canvas.height * 4));

@@ -4,6 +4,7 @@ import { setupSettingsButtons, showPassable } from "./settings.js";
 import KeyboardMovement from "./keyboard.js";
 import TouchMovement from "./touch.js";
 import { Preload } from "./canvas.js";
+import { removeLoader } from "./fadeOut.js";
 
 function isTouchDevice() {
   return (('ontouchstart' in window) ||
@@ -122,4 +123,6 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
         .catch((err) => console.log(err));
     }, false);
   })
+
+  removeLoader();
 });

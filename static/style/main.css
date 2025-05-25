@@ -182,6 +182,11 @@ form div {
   height: 15vmax;
 }
 
+.settings button, #toggle-settings {
+  background-color: #454545;
+  color: #dadada;
+}
+
 .height-controller>button {
   width: 100%;
   height: 7vmax;

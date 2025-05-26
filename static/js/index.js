@@ -1,48 +1,11 @@
 import { GameLoop } from "./gameLoop.js"
-import { canvas, ctx, joystickContainer, heightController, fps, settingsController, toggleSettingsButton } from "./elements.js";
-import { setupSettingsButtons, showPassable } from "./settings.js";
-import KeyboardMovement from "./keyboard.js";
-import TouchMovement from "./touch.js";
+import { canvas, ctx, fps } from "./elements.js";
+import { setupMovement, setupSettingsButtons, isPassable, getMovement } from "./settings.js";
 import { Preload } from "./canvas.js";
 import { removeLoader } from "./fadeOut.js";
-
-function isTouchDevice() {
-  return (('ontouchstart' in window) ||
-     (navigator.maxTouchPoints > 0) ||
-     (navigator.msMaxTouchPoints > 0));
-}
-
-
-function resize(setScreen, preload) {
-  const viewport_width = window.innerWidth || document.documentElement.clientWidth;
-  const viewport_height = window.innerHeight || document.documentElement.clientHeight;
-
-  const canvas_width = (viewport_width < 1000) ? viewport_width : viewport_width * 0.55
-  const canvas_height = (viewport_height < 600) ? viewport_height : viewport_height * 0.5
-
-  if (viewport_width < 1000) {
-    document.getElementById('map-menu').style.display = 'inline-block'
-  } else {
-    document.getElementById('map-menu').style.display = 'none'
-    document.querySelector('aside').hidden = false
-  }
-
-  if (viewport_width < 490) {
-    document.querySelector('header h1').textContent = 'DMV'
-  } else {
-    document.querySelector('header h1').textContent = 'DoW Map Viewer'
-  }
-
-  canvas.width = canvas_width
-  canvas.height = canvas_height
-
-  setScreen(canvas_width, canvas_height);
-
-  preload.render()
-}
+import { resize } from "./adaptive.js";
 
 if ('serviceWorker' in navigator) {
-    // Весь код регистрации у нас асинхронный.
   navigator.serviceWorker.register('/static/js/sw.js')
     .then((reg) => {
       reg.onupdatefound = () => {
@@ -51,8 +14,6 @@ if ('serviceWorker' in navigator) {
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
             console.log('New service worker version available.');
-
-            showUpdateNotification();
           }
         };  
       };
@@ -84,8 +45,6 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
       el.hidden = searchMap.value && !name.toLowerCase().includes(searchMap.value.toLowerCase())
     })
   }
-  setupSettingsButtons();
-
 
   resize(exports.setScreen, preload)
   window.addEventListener('resize', () => resize(exports.setScreen, preload))
@@ -96,28 +55,18 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
     panel.hidden = !panel.hidden
   }
 
-
-  joystickContainer.hidden = true;
-  heightController.hidden = true;
-  toggleSettingsButton.hidden = true;
-
-  let movement = new KeyboardMovement();
-
-  if (isTouchDevice()) {
-    settingsController.hidden = true;
-    toggleSettingsButton.hidden = false;
-    movement = new TouchMovement();
-  }
-
-  movement.enable();
+  setupMovement();
+  setupSettingsButtons();
 
   const pixelPoiner = exports.getMemoryBufferPointer();
 
   GameLoop.onFrame = () => {
+    const movement = getMovement();
+    // console.log(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
     exports.moveCamera(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    exports.loadPixels(showPassable);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    exports.loadPixels(isPassable());
 
     const canvasImageData = ctx.createImageData(canvas.width, canvas.height)
     canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, canvas.width * canvas.height * 4));

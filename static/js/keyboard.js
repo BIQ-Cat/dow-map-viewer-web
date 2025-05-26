@@ -7,10 +7,9 @@ export default class KeyboardMovement extends Movement {
     document.body.addEventListener("keyup", this.onKeyUp)
   }
 
-  reset() {
+  disable() {
     document.body.removeEventListener("keydown", this.onKeyDown)
     document.body.removeEventListener("keyup", this.onKeyUp)
-    super.reset()
   }
 
   onKeyDown = (ev) => { this.#changeKeys(ev.code.toLowerCase(), 1) }

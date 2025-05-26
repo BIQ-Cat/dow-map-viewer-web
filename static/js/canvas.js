@@ -1,4 +1,4 @@
-import { canvas, ctx } from "./elements.js";
+    import { canvas, ctx } from "./elements.js";
 import { GameLoop } from "./gameLoop.js";
 
 export class Preload {

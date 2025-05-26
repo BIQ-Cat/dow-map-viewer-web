@@ -14,4 +14,7 @@ export default class Movement {
     this.moveX = 0;
     this.moveY = 0;
   }
+
+  enable() {}
+  disable() {}
 }

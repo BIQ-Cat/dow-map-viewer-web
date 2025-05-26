@@ -14,6 +14,24 @@ export default class TouchMovement extends Movement {
     this.swipeStartY = 0;
   }
 
+  startUp = () => {
+    upButton.style.opacity = 1;
+    this.moveHeight += 1;
+  }
+  stopUp = () => {
+    upButton.style.opacity = 0.4;
+    this.moveHeight -= 1;
+  }
+
+  startDown = () => {
+    downButton.style.opacity = 1;
+    this.moveHeight -= 1;
+  }
+  stopDown = () => {
+    downButton.style.opacity = 0.4;
+    this.moveHeight += 1;
+  }
+
   enable() {
     joystickContainer.hidden = false;
     heightController.hidden = false;
@@ -22,26 +40,26 @@ export default class TouchMovement extends Movement {
     joystickContainer.addEventListener("touchstart", this.onJoystickStart);
     swipeStartElement.addEventListener("touchstart", this.onSwipeStart);
 
-    upButton.addEventListener("touchstart", () => {
-      upButton.style.opacity = 1;
-      this.moveHeight += 1;
-    })
+    upButton.addEventListener("touchstart", this.startUp)
+    upButton.addEventListener("touchend", this.stopUp)
 
-    upButton.addEventListener("touchend", () => {
-      upButton.style.opacity = 0.4;
-      this.moveHeight -= 1;
-    })
+    downButton.addEventListener("touchstart", this.startDown)
+    downButton.addEventListener("touchend", this.stopDown)
+  }
 
+  disable() {
+    joystickContainer.hidden = true;
+    heightController.hidden = true;
+    swipeStartElement.hidden = true;
 
-    downButton.addEventListener("touchstart", () => {
-      downButton.style.opacity = 1;
-      this.moveHeight -= 1;
-    })
+    joystickContainer.removeEventListener("touchstart", this.onJoystickStart);
+    swipeStartElement.removeEventListener("touchstart", this.onSwipeStart);
 
-    downButton.addEventListener("touchend", () => {
-      downButton.style.opacity = 0.4;
-      this.moveHeight += 1;
-    })
+    upButton.removeEventListener("touchstart", this.startUp)
+    upButton.removeEventListener("touchend", this.stopUp)
+
+    downButton.removeEventListener("touchstart", this.startDown)
+    downButton.removeEventListener("touchend", this.stopDown)
   }
   
 
@@ -88,8 +106,6 @@ export default class TouchMovement extends Movement {
   onJoystickStart = (ev) => {
     this.joystickTouch = this.numberOfTouches;
     this.numberOfTouches++;
-
-    console.log(this)
 
     this.onJoystickMove(ev);
 
@@ -140,7 +156,7 @@ export default class TouchMovement extends Movement {
     const deltaY = clientY - this.swipeStartY;
 
     this.moveAngle = deltaX / 3;
-    this.movePitch = deltaY / 3;
+    this.movePitch = -deltaY / 3;
 
     this.swipeStartX = clientX;
     this.swipeStartY = clientY;

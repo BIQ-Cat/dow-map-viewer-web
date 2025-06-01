@@ -1,4 +1,4 @@
 # Dawn of War Map viewer (Web version)
 ## The project based on DoW Map Viewer and hippodrome engine 
 
-https://youtu.be/jjZ1xwoxlEE
+Видео-презентация - https://youtu.be/jjZ1xwoxlEE

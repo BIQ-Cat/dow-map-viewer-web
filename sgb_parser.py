@@ -70,7 +70,13 @@ def bfloat16_to_int(sgb_byte1: int, sgb_byte2: int) -> float:
 
 
 def fetch_points(filename: str):
-    res = dict()
+    res = {
+        'flag': None,
+        'relic': None,
+        'crit': None,
+        'slag': None,
+        'spawn': None
+    }
 
     with open(f'maps/{filename}.sgb', 'rb') as f:
         data = f.read()

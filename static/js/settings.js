@@ -1,28 +1,37 @@
 import { isTouchDevice, resize } from "./adaptive.js";
-import { canvas, fps, heightController, joystickContainer, settingsController, switchMovementButton, togglePassabilityButton, toggleSettingsButton } from "./elements.js"
+import {
+  canvas,
+  fps,
+  heightController,
+  joystickContainer,
+  settingsController,
+  switchMovementButton,
+  togglePassabilityButton,
+  toggleSettingsButton,
+} from "./elements.js";
 import KeyboardMovement from "./keyboard.js";
 import TouchMovement from "./touch.js";
 
 export function setupSettingsButtons() {
   fps.hidden = true;
-  toggleSettingsButton.hidden = !isTouchDevice()
-  settingsController.hidden = isTouchDevice()
-  switchMovementButton.hidden = !isTouchDevice()
+  toggleSettingsButton.hidden = !isTouchDevice();
+  settingsController.hidden = isTouchDevice();
+  switchMovementButton.hidden = !isTouchDevice();
 
-  
-  document.getElementById('toggle-fps').onclick = () => {
+  document.getElementById("toggle-fps").onclick = (ev) => {
     fps.hidden = !fps.hidden;
-  }
+    ev.target.blur();
+  };
 
-  document.getElementById('reset-camera').onclick = () => { 
+  document.getElementById("reset-camera").onclick = () => {
     getMovement().reset();
-  }
+  };
 
   toggleSettingsButton.onclick = () => {
     settingsController.hidden = !settingsController.hidden;
     joystickContainer.hidden = !joystickContainer.hidden;
     heightController.hidden = !heightController.hidden;
-  }
+  };
 
   switchMovementButton.onclick = () => {
     getMovement().disable();
@@ -32,22 +41,27 @@ export function setupSettingsButtons() {
     settingsController.hidden = isTouchMovement;
 
     getMovement().enable();
-    switchMovementButton.textContent = isTouchMovement ? 'keyboard' : 'joystick';
+    switchMovementButton.textContent = isTouchMovement
+      ? "keyboard"
+      : "joystick";
 
     canvas.hidden = false;
-  }
-  
+  };
+
   togglePassabilityButton.onclick = () => {
+    togglePassabilityButton.blur();
     showPassable = !showPassable;
-    togglePassabilityButton.textContent = showPassable ? 'flip_to_front' : 'flip_to_back';
-  }
+    togglePassabilityButton.textContent = showPassable
+      ? "flip_to_front"
+      : "flip_to_back";
+  };
 }
 
 export function setupMovement() {
   joystickContainer.hidden = true;
   heightController.hidden = true;
 
-  getMovement().enable()
+  getMovement().enable();
 }
 
 let showPassable = false;
@@ -58,6 +72,7 @@ let touchMovement = new TouchMovement();
 
 export const isPassable = () => {
   return showPassable;
+};
+export const getMovement = () =>
+  isTouchMovement ? touchMovement : keyboardMovement;
 
-}
-export const getMovement = () => isTouchMovement ? touchMovement : keyboardMovement;

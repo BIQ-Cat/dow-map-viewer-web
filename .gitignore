@@ -1,4 +1,6 @@
 .venv
 *.wasm
 __pycache__
-*.db
+*.d
+maps/*/*
+db/

@@ -1,59 +1,70 @@
-import { GameLoop } from "./gameLoop.js"
+import { GameLoop } from "./gameLoop.js";
 import { canvas, ctx, fps } from "./elements.js";
-import { setupMovement, setupSettingsButtons, isPassable, getMovement } from "./settings.js";
+import {
+  setupMovement,
+  setupSettingsButtons,
+  isPassable,
+  getMovement,
+} from "./settings.js";
 import { Preload } from "./canvas.js";
 import { removeLoader } from "./fadeOut.js";
 import { resize } from "./adaptive.js";
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/static/js/sw.js')
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/static/js/sw.js")
     .then((reg) => {
       reg.onupdatefound = () => {
         const installingWorker = reg.installing;
 
         installingWorker.onstatechange = () => {
-          if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('New service worker version available.');
+          if (
+            installingWorker.state === "installed" &&
+            navigator.serviceWorker.controller
+          ) {
+            console.log("New service worker version available.");
           }
-        };  
+        };
       };
     })
     .catch((err) => console.log(err));
 }
 
-
 const go = new Go();
-WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.importObject).then((result) => {
+WebAssembly.instantiateStreaming(
+  fetch("/static/wasm/raycasting.wasm"),
+  go.importObject,
+).then((result) => {
   GameLoop.renderFPS = (frames) => {
     fps.textContent = `FPS: ${frames}`;
-  }
+  };
   GameLoop.enableFPS = true;
 
-  
   go.run(result.instance);
 
   const exports = result.instance.exports;
 
-  const preload = new Preload("/static/img/default.jpg")
+  const preload = new Preload("/static/img/default.jpg");
 
-  const searchMap = document.getElementById("search_map")
-  searchMap.value = ""
+  const searchMap = document.getElementById("search_map");
+  searchMap.value = "";
   searchMap.oninput = () => {
     document.querySelectorAll("aside .map").forEach((el) => {
       const name = el.querySelector("h3").textContent;
 
-      el.hidden = searchMap.value && !name.toLowerCase().includes(searchMap.value.toLowerCase())
-    })
-  }
+      el.hidden =
+        searchMap.value &&
+        !name.toLowerCase().includes(searchMap.value.toLowerCase());
+    });
+  };
 
-  resize(exports.setScreen, preload)
-  window.addEventListener('resize', () => resize(exports.setScreen, preload))
+  resize(exports.setScreen, preload);
+  window.addEventListener("resize", () => resize(exports.setScreen, preload));
 
-
-  document.getElementById('map-menu').onclick = () => {
-    const panel = document.querySelector('aside')
-    panel.hidden = !panel.hidden
-  }
+  document.getElementById("map-menu").onclick = () => {
+    const panel = document.querySelector("aside");
+    panel.hidden = !panel.hidden;
+  };
 
   setupMovement();
   setupSettingsButtons();
@@ -63,33 +74,62 @@ WebAssembly.instantiateStreaming(fetch("/static/wasm/raycasting.wasm"), go.impor
   GameLoop.onFrame = () => {
     const movement = getMovement();
     // console.log(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
-    exports.moveCamera(movement.moveX, movement.moveY, movement.moveAngle, movement.movePitch, movement.moveHeight)
+    exports.moveCamera(
+      movement.moveX,
+      movement.moveY,
+      movement.moveAngle,
+      movement.movePitch,
+      movement.moveHeight,
+    );
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    exports.loadPixels(isPassable());
+    exports.clearBuffer();
+    let passable = isPassable();
 
-    const canvasImageData = ctx.createImageData(canvas.width, canvas.height)
-    canvasImageData.data.set(new Uint8ClampedArray(exports.memory.buffer, pixelPoiner, canvas.width * canvas.height * 4));
+    const tasks = [];
+    for (let i = 0; i < canvas.width; i++)
+      tasks.push(
+        new Promise((resolve) => {
+          exports.loadPixels(i, passable);
+          resolve(true);
+        }),
+      );
 
-    ctx.putImageData(canvasImageData, 0, 0);
-  }
+    Promise.all(tasks).then(() => {
+      const canvasImageData = ctx.createImageData(canvas.width, canvas.height);
+      canvasImageData.data.set(
+        new Uint8ClampedArray(
+          exports.memory.buffer,
+          pixelPoiner,
+          canvas.width * canvas.height * 4,
+        ),
+      );
+
+      ctx.putImageData(canvasImageData, 0, 0);
+    });
+  };
 
   document.querySelectorAll("aside .map button").forEach((el) => {
-    el.addEventListener("click", () => {
-      GameLoop.stop();
+    el.addEventListener(
+      "click",
+      () => {
+        GameLoop.stop();
 
-      const mapName = el.dataset.map;
-      const id = el.dataset.uid;
-      fetch(`/map/${mapName}?id=${id}`)
-        .then((response) => response.text())
-        .then((gameMap) => {
-          setGameMap(gameMap);
+        const mapName = el.dataset.map;
+        const id = el.dataset.uid;
+        fetch(`/map/${mapName}?id=${id}`)
+          .then((response) => response.text())
+          .then((gameMap) => {
+            console.log(gameMap);
+            setGameMap(gameMap);
 
-          GameLoop.start()
-        })
-        .catch((err) => console.log(err));
-    }, false);
-  })
+            GameLoop.start();
+          })
+          .catch((err) => console.log(err));
+      },
+      false,
+    );
+  });
 
   removeLoader();
 });

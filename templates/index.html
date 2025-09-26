@@ -13,7 +13,7 @@
   <button id="reset-camera" class="material-symbols-outlined">reset_focus</button>
 </div>
 <aside>
-  <input type="search" class="form-control" id="search_map" placeholder="Search for a map" />
+  <input type="search" id="search_map" placeholder="Search for a map" />
   {% if current_user.is_authenticated %}
   <div class="map">
       <a href="/map_new"><button>Add</button></a>
@@ -23,7 +23,10 @@
   <div class="container">
   {% for map in maps %}
     <div class="map">
-      <button data-map="{{map[0]}}" data-uid="{{map[2]}}">Load</button>
+      <button data-map="{{map[0]}}" data-uid="{{map[2]}}" class="load">Load</button>
+      {% if map[2] != -1 %}
+      <a href="/map/{{map[1]}}/delete" class="dangerous"><button>Delete</button></a>
+      {% endif %}
       <h3>{{ map[1] }}</h3>
     </div>
   {% endfor %}

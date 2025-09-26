@@ -1,18 +1,18 @@
 header {
-    width: 100vw;
-    height: 10%;
-    background-color: #353535;
-    padding: 15px;
-    color: #cdcdcd;
+  width: 100vw;
+  height: 10%;
+  background-color: #353535;
+  padding: 15px;
+  color: #cdcdcd;
 }
 
 body {
-    margin: 0;
-    background-color: #121212;
-    overflow: hidden;
-    height: 100%;
-    color: #fff;
-    touch-action: none;
+  margin: 0;
+  background-color: #121212;
+  overflow: hidden;
+  height: 100%;
+  color: #fff;
+  touch-action: none;
 }
 
 #root {
@@ -50,7 +50,7 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  
+
   width: 8vmax;
   height: 8vmax;
 
@@ -93,11 +93,59 @@ body {
 }
 
 header * {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    color: white;
-    text-decoration: none;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  color: white;
+  text-decoration: none;
+}
+
+input {
+  border: 2px outset #565656;
+  width: 100%;
+  padding: 5px;
+  font-weight: bold;
+  background-color: #323232;
+  color: white;
+  outline: none;
+  text-align: left;
+}
+
+input[type="submit"] {
+  font-family: "Felina Gothic";
+  font-size: 1.5em;
+  width: initial;
+  padding: 10px;
+}
+
+form {
+  width: 70vw;
+  margin: 0 auto;
+}
+
+form label {
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.dangerous,
+.dangerous * {
+  background-color: #ad3333 !important;
+  text-decoration: none;
+  color: white;
+}
+
+.dangerous:hover,
+.dangerous *:hover {
+  background-color: #ff0000 !important;
+}
+
+input:focus {
+  border-color: #878787;
+}
+
+input::placeholder {
+  color: #dadada;
 }
 
 header ul {
@@ -122,8 +170,9 @@ header li a:hover {
 }
 
 h1 {
-    font-size: 2em;
-    font-family: "Felina Gothic";
+  font-size: 2em;
+  text-align: center;
+  font-family: "Felina Gothic";
 }
 
 aside {
@@ -158,7 +207,7 @@ aside .map button {
   cursor: pointer;
   padding: 1px 4px;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  border: 2px inline rgb(117, 116, 122);
+  border: 2px inset rgb(117, 116, 122);
   background: #333;
   color: white;
   font-weight: bold;
@@ -184,12 +233,13 @@ form div {
   height: 15vmax;
 }
 
-.settings button, #toggle-settings {
+.settings button,
+#toggle-settings {
   background-color: #454545;
   color: #dadada;
 }
 
-.height-controller>button {
+.height-controller > button {
   width: 100%;
   height: 7vmax;
   background-color: #fff;
@@ -205,7 +255,7 @@ form div {
   user-select: none;
 }
 
-.height-controller>button:last-child {
+.height-controller > button:last-child {
   margin-bottom: 0;
 }
 
@@ -223,9 +273,13 @@ form div {
   #root {
     padding: 0;
   }
+
+  form {
+    width: 90vw;
+  }
 }
 
-@media (max-width: 400px) { 
+@media (max-width: 400px) {
   .settings {
     grid-template-columns: repeat(2, 1fr);
   }

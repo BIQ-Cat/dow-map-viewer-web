@@ -109,7 +109,14 @@ WebAssembly.instantiateStreaming(
     });
   };
 
-  document.querySelectorAll("aside .map button").forEach((el) => {
+  document.querySelectorAll(".dangerous").forEach((el) => {
+    el.addEventListener("click", (ev) => {
+      if (!(confirm("Are you sure?") && confirm("REALLY?")))
+        ev.preventDefault();
+    });
+  });
+
+  document.querySelectorAll("aside .map button.load").forEach((el) => {
     el.addEventListener(
       "click",
       () => {

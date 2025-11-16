@@ -30,6 +30,10 @@ if ("serviceWorker" in navigator) {
     .catch((err) => console.log(err));
 }
 
+window.onmessage = (event) => {
+  if (event.data == "noheader") document.querySelector("header").remove();
+};
+
 const go = new Go();
 WebAssembly.instantiateStreaming(
   fetch("/static/wasm/raycasting.wasm"),

@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, abort, jsonify, render_template, request, send_file
 from flask.helpers import redirect
+from flask_cors import cross_origin
 from flask_login import (
     LoginManager,
     current_user,
@@ -203,6 +204,7 @@ def log_out():
 
 @app.route("/index")
 @app.route("/")
+@cross_origin()
 def index():
     maps = [("blood_river", "Blood River", -1), ("fata_morga", "Fata Morga", -1)]
     if current_user.is_authenticated:

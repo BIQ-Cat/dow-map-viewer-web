@@ -20,8 +20,12 @@ export function resize(setScreen, preload) {
     viewport_height < 600 ? viewport_height : viewport_height * 0.5;
 
   if (viewport_width < 1000) {
+    if (document.querySelector("header").dataset?.hidden)
+      document.querySelector("header").hidden = false;
     document.getElementById("map-menu").style.display = "inline-block";
   } else {
+    if (document.querySelector("header").dataset?.hidden)
+      document.querySelector("header").hidden = true;
     document.getElementById("map-menu").style.display = "none";
     document.querySelector("aside").hidden = false;
   }

@@ -30,6 +30,15 @@ if ("serviceWorker" in navigator) {
     .catch((err) => console.log(err));
 }
 
+window.onmessage = (event) => {
+  if (event.data == "noheader") {
+    document
+      .querySelectorAll("header ul li")
+      .forEach((el) => (el.style.display = "none"));
+    document.querySelector("header").dataset.hidden = true;
+  }
+};
+
 const go = new Go();
 WebAssembly.instantiateStreaming(
   fetch("/static/wasm/raycasting.wasm"),
@@ -60,15 +69,6 @@ WebAssembly.instantiateStreaming(
 
   resize(exports.setScreen, preload);
 
-  window.onmessage = (event) => {
-    if (event.data == "noheader") {
-      document
-        .querySelectorAll("header ul li")
-        .forEach((el) => (el.style.display = "none"));
-      document.querySelector("header").dataset.hidden = true;
-      resize(exports.setScreen, preload);
-    }
-  };
   window.addEventListener("resize", () => resize(exports.setScreen, preload));
 
   document.getElementById("map-menu").onclick = () => {

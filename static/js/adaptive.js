@@ -20,16 +20,16 @@ export function resize(setScreen, preload) {
     viewport_height < 600 ? viewport_height : viewport_height * 0.5;
 
   if (viewport_width < 1000) {
-    document.getElementById("map-menu")?.style.display = "inline-block";
+    document.getElementById("map-menu").style.display = "inline-block";
   } else {
-    document.getElementById("map-menu")?.style.display = "none";
-    document.querySelector("aside")?.hidden = false;
+    document.getElementById("map-menu").style.display = "none";
+    document.querySelector("aside").hidden = false;
   }
 
   if (viewport_width < 490) {
-    document.querySelector("header h1")?.textContent = "DMV";
+    document.querySelector("header h1").textContent = "DMV";
   } else {
-    document.querySelector("header h1")?.textContent = "DoW Map Viewer";
+    document.querySelector("header h1").textContent = "DoW Map Viewer";
   }
 
   canvas.width = canvas_width;
@@ -39,4 +39,3 @@ export function resize(setScreen, preload) {
 
   preload.render();
 }
-
